@@ -1,0 +1,6 @@
+# Allowed emails/domains for analytics filtering
+# Examples:
+# alice@example.com
+# @fin4.com
+# *@engineering.company
+# re:.*@(partner1\.org|partner2\.org)
