@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Python Extract",
+      "type": "shell",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/extract_card_info.py",
+        "--file", "${workspaceFolder}/sample.txt",
+        "--pretty",
+        "--progress",
+        "--stages", "Extracting|Waiting for database|Successfully extracted data|Getting information",
+        "--spinner"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Node Extract",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/js/extractCardInfo.js",
+        "--file", "${workspaceFolder}/sample.txt",
+        "--pretty",
+        "--progress",
+        "--stages", "Extracting|Waiting for database|Successfully extracted data|Getting information",
+        "--spinner"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

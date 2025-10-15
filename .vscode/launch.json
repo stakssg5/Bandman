@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: extract_card_info.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/extract_card_info.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--file", "${workspaceFolder}/sample.txt",
+        "--pretty",
+        "--progress",
+        "--stages", "Extracting|Waiting for database|Successfully extracted data|Getting information",
+        "--spinner"
+      ]
+    },
+    {
+      "name": "Node: extractCardInfo.js",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/js/extractCardInfo.js",
+      "console": "integratedTerminal",
+      "args": [
+        "--file", "${workspaceFolder}/sample.txt",
+        "--pretty",
+        "--progress",
+        "--stages", "Extracting|Waiting for database|Successfully extracted data|Getting information",
+        "--spinner"
+      ]
+    }
+  ]
+}

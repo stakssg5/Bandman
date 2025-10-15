@@ -1,0 +1,12 @@
+{
+  "name": "card-extractor-cli",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "extract-card-info": "./js/extractCardInfo.js"
+  },
+  "scripts": {
+    "extract:js": "node ./js/extractCardInfo.js",
+    "extract:py": "python3 ./extract_card_info.py"
+  }
+}
