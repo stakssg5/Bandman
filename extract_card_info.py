@@ -152,6 +152,19 @@ def _run_progress(stages: List[str], delay_seconds: float, use_spinner: bool) ->
             time.sleep(delay)
 
 
+def _filter_fields(result: Dict[str, Any], fields_arg: Optional[str]) -> Dict[str, Any]:
+    if not fields_arg:
+        return result
+    requested = [s.strip().lower() for s in re.split(r"[|,]", fields_arg) if s.strip()]
+    if not requested:
+        return result
+    allowed = set(result.keys())
+    selected = [k for k in requested if k in allowed]
+    if not selected:
+        return result
+    return {k: result.get(k) for k in selected}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Extract card info signals from text")
     input_group = parser.add_mutually_exclusive_group()
@@ -163,6 +176,7 @@ def main() -> None:
     parser.add_argument("--stages", type=str, help="Custom progress stages separated by '|' or ','")
     parser.add_argument("--progress-delay", type=float, default=0.6, help="Seconds per stage (spinner duration or sleep)")
     parser.add_argument("--spinner", action="store_true", help="Animate a spinner for each stage")
+    parser.add_argument("--fields", type=str, help="Comma- or '|'-separated list of fields to output")
 
     args = parser.parse_args()
 
@@ -183,11 +197,12 @@ def main() -> None:
         _run_progress(stages, args.progress_delay, args.spinner)
 
     result = extract_card_info(text, return_full_pan=args.full_pan)
+    output = _filter_fields(result, args.fields)
 
     if args.pretty:
-        print(json.dumps(result, indent=2, sort_keys=True))
+        print(json.dumps(output, indent=2, sort_keys=True))
     else:
-        print(json.dumps(result, separators=(",", ":")))
+        print(json.dumps(output, separators=(",", ":")))
 
 
 if __name__ == "__main__":
