@@ -17,10 +17,11 @@ from __future__ import annotations
 import argparse
 import calendar
 import json
+import time
 import re
 import sys
 from datetime import date
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 # Patterns
 CARD_CANDIDATE_PATTERN = re.compile(r"((?:\d[ -]?){12,18}\d)")  # 13–19 digits with spaces/dashes
@@ -124,6 +125,33 @@ def _read_input_from_args(args: argparse.Namespace) -> str:
     return data
 
 
+def _run_progress(stages: List[str], delay_seconds: float, use_spinner: bool) -> None:
+    """Print progress messages to stderr, optionally with a spinner.
+
+    Each stage is displayed for roughly delay_seconds. If use_spinner is True,
+    a spinner animates during that period; otherwise we sleep between prints.
+    """
+    if not stages:
+        return
+    delay = max(0.05, delay_seconds)
+    spinner_frames = ["|", "/", "-", "\\"]
+    for stage in stages:
+        if use_spinner:
+            end_time = time.time() + delay
+            frame_index = 0
+            while time.time() < end_time:
+                sys.stderr.write(f"\r{stage} {spinner_frames[frame_index % len(spinner_frames)]}")
+                sys.stderr.flush()
+                time.sleep(0.1)
+                frame_index += 1
+            sys.stderr.write(f"\r{stage} ... done\n")
+            sys.stderr.flush()
+        else:
+            sys.stderr.write(f"{stage}...\n")
+            sys.stderr.flush()
+            time.sleep(delay)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Extract card info signals from text")
     input_group = parser.add_mutually_exclusive_group()
@@ -131,10 +159,29 @@ def main() -> None:
     input_group.add_argument("--file", type=str, help="Path to a text file to read")
     parser.add_argument("--full-pan", action="store_true", help="Return full PAN (ensure compliance)")
     parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON output")
+    parser.add_argument("--progress", action="store_true", help="Show progress stages to stderr before output")
+    parser.add_argument("--stages", type=str, help="Custom progress stages separated by '|' or ','")
+    parser.add_argument("--progress-delay", type=float, default=0.6, help="Seconds per stage (spinner duration or sleep)")
+    parser.add_argument("--spinner", action="store_true", help="Animate a spinner for each stage")
 
     args = parser.parse_args()
 
     text = _read_input_from_args(args)
+
+    if args.progress:
+        # Default neutral stages; can be overridden via --stages
+        if args.stages:
+            raw = args.stages
+            stages = [s.strip() for s in re.split(r"[|,]", raw) if s.strip()]
+        else:
+            stages = [
+                "Scanning input",
+                "Validating patterns",
+                "Normalizing fields",
+                "Finalizing",
+            ]
+        _run_progress(stages, args.progress_delay, args.spinner)
+
     result = extract_card_info(text, return_full_pan=args.full_pan)
 
     if args.pretty:
