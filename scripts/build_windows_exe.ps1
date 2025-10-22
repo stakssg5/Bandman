@@ -10,13 +10,13 @@ Write-Host "Installing PyInstaller..." -ForegroundColor Cyan
 
 $root = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $repoRoot = Resolve-Path (Join-Path $root "..")
-$entry = Join-Path $repoRoot "apps/wallet_checker_gui.py"
+$entry = Join-Path $repoRoot "apps/zoeseed.py"
 
 if (-not (Test-Path $entry)) {
     throw "Entry script not found: $entry"
 }
 
-$buildArgs = @("-m", "PyInstaller", "--onefile", "--name", "WalletChecker")
+$buildArgs = @("-m", "PyInstaller", "--onefile", "--name", "Zoe seed")
 
 if ($Noconsole) { $buildArgs += "--noconsole" }
 
