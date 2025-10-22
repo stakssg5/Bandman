@@ -22,7 +22,28 @@ Option 2 — CMD:
 scripts\build_windows_exe.bat
 ```
 
-The compiled executable `CryptoPRPlus.exe` will be in the `dist` folder.
+The compiled executables will be in the `dist` folder:
+
+- `CryptoPRPlus.exe` — GUI app
+- `ScanUntilProfit.exe` — CLI that scans addresses across chains until a positive balance is found.
+
+### Run the CLI scanner (cross‑platform)
+
+Examples:
+
+```bash
+# Use defaults (public RPCs and demo addresses)
+python3 apps/scan_until_profit.py
+
+# Provide your own addresses (comma‑separated)
+python3 apps/scan_until_profit.py --addresses "0x...,bc1...,T..."
+
+# Or from a file (one address per line)
+python3 apps/scan_until_profit.py --file my_addresses.txt
+
+# Limit chains and throttle requests a bit
+python3 apps/scan_until_profit.py --chains eth,btc,tron --sleep-ms 300
+```
 
 ## Build macOS app (.app)
 
