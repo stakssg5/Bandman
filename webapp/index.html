@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crypto PR+ — Mini App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div class="title-muted">Checked Wallets</div>
+        <div id="big-counter" class="big-number">0</div>
+        <div class="section-title">Search results</div>
+      </header>
+
+      <section class="results" id="results"></section>
+
+      <section class="chains">
+        <div class="badge">₿</div>
+        <div class="badge">Ξ</div>
+        <div class="badge">BNB</div>
+        <div class="badge">◎</div>
+        <div class="badge">AVA</div>
+        <div class="badge">Ł</div>
+        <div class="badge">OP</div>
+        <div class="badge">MATIC</div>
+        <div class="badge">TON</div>
+        <div class="badge">TRX</div>
+      </section>
+
+      <div class="controls">
+        <button id="toggle-btn" class="primary">Stop</button>
+      </div>
+
+      <nav class="bottom-nav">
+        <span>My profile</span>
+        <span>Plans</span>
+        <span>Support</span>
+        <span>FAQ</span>
+      </nav>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
