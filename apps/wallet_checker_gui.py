@@ -4,6 +4,16 @@ import random
 import queue
 import tkinter as tk
 from tkinter import ttk
+from typing import Iterable
+
+# Core modules for real RPC integration
+try:
+    from wallet_checker.address_queue import AddressQueue
+    from wallet_checker.runner import ChainWorker
+except Exception:
+    # Allow the UI to run standalone if core is missing
+    AddressQueue = None  # type: ignore
+    ChainWorker = None  # type: ignore
 
 
 class WalletCheckerApp(tk.Tk):
@@ -41,6 +51,8 @@ class WalletCheckerApp(tk.Tk):
         self._worker_thread: threading.Thread | None = None
 
         self._word_pool = _DEFAULT_WORD_POOL
+        self._address_queue = AddressQueue(maxsize=2000) if AddressQueue else None
+        self._chain_threads: list[threading.Thread] = []
 
         # Layout
         self._build_header()
@@ -187,7 +199,11 @@ class WalletCheckerApp(tk.Tk):
         self._running_flag.set()
         self.toggle_btn.configure(text="Stop")
         if self._worker_thread is None or not self._worker_thread.is_alive():
-            self._worker_thread = threading.Thread(target=self._worker, name="wallet-checker", daemon=True)
+            # If core modules available, start real workers; also keep a filler for UI smoothness
+            if self._address_queue and ChainWorker:
+                self._start_chain_workers()
+                self._seed_demo_addresses()
+            self._worker_thread = threading.Thread(target=self._filler_worker, name="ui-filler", daemon=True)
             self._worker_thread.start()
 
     def stop(self) -> None:
@@ -199,7 +215,7 @@ class WalletCheckerApp(tk.Tk):
         self.destroy()
 
     # ----- Worker and UI pump -----
-    def _worker(self) -> None:
+    def _filler_worker(self) -> None:
         random.seed()
         while self._running_flag.is_set():
             time.sleep(0.012)
@@ -244,6 +260,50 @@ class WalletCheckerApp(tk.Tk):
             self.listbox.delete(0, self.listbox.size() - max_items)
         self.listbox.insert(tk.END, text)
         self.listbox.yview_moveto(1.0)
+
+    # ----- Real integration -----
+    def _seed_demo_addresses(self) -> None:
+        if not self._address_queue:
+            return
+        demo: list[str] = [
+            # ETH/EVM demo addresses (public, random)
+            "0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe",
+            "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+            # BTC
+            "bc1qw4yq0w6yq7w4q2e7krq6t8g0rjhs0f0y7z6e9k",
+            # Tron
+            "TQ5Cw1hF4u8q7aVJvWq6yC2A9L1mQ2N9Xh",
+        ]
+        try:
+            self._address_queue.add_many(demo)
+        except Exception:
+            pass
+
+    def _start_chain_workers(self) -> None:
+        if not (self._address_queue and ChainWorker):
+            return
+
+        def on_result(res) -> None:
+            self._checked_count += 1
+            try:
+                bal = float(res.display.split()[0])  # naive parse of leading number
+            except Exception:
+                bal = 0.0
+            prefix = "Balance > 0" if bal > 0 else "Balance 0"
+            self._event_queue.put_nowait((f"{prefix} | {res.chain}:{res.address[:10]}… | {res.display}", bal > 0))
+
+        workers = [
+            ("eth", 2.0),
+            ("polygon", 2.0),
+            ("bsc", 2.0),
+            ("op", 2.0),
+            ("btc", 1.0),
+            ("tron", 1.0),
+        ]
+
+        for chain_key, rps in workers:
+            cw = ChainWorker(chain_key=chain_key, rate_limit_per_sec=rps, addresses=self._address_queue, on_result=on_result)
+            self._chain_threads.append(cw.start())
 
 
 _DEFAULT_WORD_POOL = (
