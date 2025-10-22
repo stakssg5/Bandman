@@ -30,6 +30,6 @@ Write-Host "Building Windows executable..." -ForegroundColor Cyan
 & $PythonExe $buildArgs
 
 Write-Host "Building CLI scanner executable..." -ForegroundColor Cyan
-& $PythonExe -m PyInstaller --onefile --name ScanUntilProfit $entryCli
+& $PythonExe -m PyInstaller --onefile --name ScanUntilProfit --paths $repoRoot $entryCli
 
 Write-Host "Done. EXEs should be in the 'dist' folder." -ForegroundColor Green
