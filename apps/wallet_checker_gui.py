@@ -49,6 +49,8 @@ class WalletCheckerApp(tk.Tk):
         self._checked_count = 0
         self._found_count = 0
         self._worker_thread: threading.Thread | None = None
+        # Stop scanning automatically when a positive balance is detected
+        self._stop_on_profit = True
 
         self._word_pool = _DEFAULT_WORD_POOL
         self._address_queue = AddressQueue(maxsize=2000) if AddressQueue else None
@@ -56,6 +58,7 @@ class WalletCheckerApp(tk.Tk):
 
         # Layout
         self._build_header()
+        self._build_profits_panel()
         self._build_results_list()
         self._build_chains_grid()
         self._build_controls()
@@ -100,6 +103,47 @@ class WalletCheckerApp(tk.Tk):
             font=("Segoe UI", 20, "bold"),
         )
         sr_title.pack(side=tk.TOP, anchor="w", padx=20)
+
+    def _build_profits_panel(self) -> None:
+        panel = tk.Frame(self, bg=self._colors["bg"])  # spacing container
+        panel.pack(side=tk.TOP, fill=tk.X, padx=20, pady=(2, 8))
+
+        title = tk.Label(
+            panel,
+            text="Profits",
+            bg=self._colors["bg"],
+            fg=self._colors["text"],
+            font=("Segoe UI", 18, "bold"),
+        )
+        title.pack(anchor="w", pady=(0, 6))
+
+        card = tk.Frame(panel, bg=self._colors["card"], relief=tk.FLAT)
+        card.pack(fill=tk.X)
+
+        self.profits_count_var = tk.StringVar(value="0")
+        self.last_profit_var = tk.StringVar(value="—")
+
+        left = tk.Label(
+            card,
+            textvariable=self.profits_count_var,
+            bg=self._colors["card"],
+            fg=self._colors["accent"],
+            font=("Segoe UI", 20, "bold"),
+            padx=12,
+            pady=10,
+        )
+        left.pack(side=tk.LEFT)
+
+        right = tk.Label(
+            card,
+            textvariable=self.last_profit_var,
+            bg=self._colors["card"],
+            fg=self._colors["muted"],
+            font=("Consolas", 11),
+            padx=8,
+            pady=10,
+        )
+        right.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
     def _build_results_list(self) -> None:
         frame = tk.Frame(self, bg=self._colors["bg"])
@@ -243,6 +287,12 @@ class WalletCheckerApp(tk.Tk):
                     self.checked_big_var.set(f"{self._checked_count:,}")
                 else:
                     self._append_line(message)
+                    if _is_found:
+                        self._found_count += 1
+                        self.profits_count_var.set(str(self._found_count))
+                        self.last_profit_var.set(message)
+                        if self._stop_on_profit:
+                            self.stop()
                 processed += 1
         except queue.Empty:
             pass
