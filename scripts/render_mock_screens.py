@@ -25,6 +25,11 @@ except Exception:
 img = Image.new("RGB", (W, H), BG)
 d = ImageDraw.Draw(img)
 
+def measure(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont):
+    # Pillow 10+: use textbbox instead of deprecated textsize
+    bbox = draw.textbbox((0, 0), text, font=font)
+    return (bbox[2] - bbox[0], bbox[3] - bbox[1])
+
 # Header
 margin = 48
 y = margin
@@ -65,7 +70,7 @@ for idx, (txt, color) in enumerate(badges):
     cx = margin + col * ((card_w - r) // (cols - 1))
     cy = y + row * (r + pad)
     d.rounded_rectangle((cx, cy, cx + r, cy + r), radius=16, fill=CARD)
-    tw, th = d.textsize(txt, font=FONT_SMALL)
+    tw, th = measure(d, txt, FONT_SMALL)
     d.text((cx + (r - tw) / 2, cy + (r - th) / 2), txt, fill=color, font=FONT_SMALL)
 
 y += 2 * (r + pad) + 40
@@ -74,7 +79,7 @@ y += 2 * (r + pad) + 40
 btn_h = 100
 btn_rect = (margin, y, margin + card_w, y + btn_h)
 d.rounded_rectangle(btn_rect, radius=24, fill=(255, 255, 255))
-tw, th = d.textsize("Stop", font=FONT_MED)
+tw, th = measure(d, "Stop", FONT_MED)
 d.text((margin + (card_w - tw) / 2, y + (btn_h - th) / 2), "Stop", fill=(11, 15, 26), font=FONT_MED)
 
 y += btn_h + 80
@@ -84,7 +89,7 @@ nav_h = 100
 d.rectangle((0, H - nav_h, W, H), fill=(11, 15, 26))
 items = ["My profile", "Plans", "Support", "FAQ"]
 for i, t in enumerate(items):
-    tw, th = d.textsize(t, font=FONT_SMALL)
+    tw, th = measure(d, t, FONT_SMALL)
     x = margin + i * ((W - 2 * margin) // (len(items) - 1))
     d.text((x - tw / 2, H - nav_h / 2 - th / 2), t, fill=MUTED, font=FONT_SMALL)
 
