@@ -7,6 +7,7 @@
   },
   "scripts": {
     "extract:js": "node ./js/extractCardInfo.js",
-    "extract:py": "python3 ./extract_card_info.py"
+    "extract:py": "python3 ./extract_card_info.py",
+    "web": "bash ./scripts/run_web.sh"
   }
 }
