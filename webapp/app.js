@@ -3,8 +3,10 @@ const tg = window.Telegram?.WebApp;
 if (tg) {
   tg.ready();
   tg.expand();
-  tg.MainButton.hide();
   tg.setHeaderColor("secondary_bg_color");
+  // Configure MainButton for Start/Stop control
+  tg.MainButton.setText("Stop");
+  tg.MainButton.show();
 }
 
 const results = document.getElementById('results');
@@ -38,11 +40,37 @@ function tick(){
 
 const timer = setInterval(tick, 12);
 
-// Toggle
- toggleBtn.addEventListener('click', () => {
+// Toggle via on-screen button (fallback for browsers)
+toggleBtn.addEventListener('click', () => {
   running = !running;
   toggleBtn.textContent = running ? 'Stop' : 'Start';
+  if (tg) tg.MainButton.setText(running ? 'Stop' : 'Start');
 });
+
+// Toggle via Telegram MainButton
+if (tg) {
+  tg.onEvent('mainButtonClicked', () => {
+    running = !running;
+    tg.MainButton.setText(running ? 'Stop' : 'Start');
+    toggleBtn.textContent = running ? 'Stop' : 'Start';
+  });
+}
+
+// Apply Telegram theme colors to CSS variables
+function applyThemeFromTelegram(){
+  if (!tg) return;
+  const p = tg.themeParams || {};
+  const root = document.documentElement.style;
+  if (p.bg_color) root.setProperty('--bg', p.bg_color);
+  if (p.secondary_bg_color) root.setProperty('--panel', p.secondary_bg_color);
+  if (p.button_color) root.setProperty('--button-bg', p.button_color);
+  if (p.button_text_color) root.setProperty('--button-fg', p.button_text_color);
+  if (p.text_color) root.setProperty('--text', p.text_color);
+  if (p.hint_color) root.setProperty('--muted', p.hint_color);
+  if (p.link_color) root.setProperty('--accent', p.link_color);
+}
+applyThemeFromTelegram();
+if (tg) tg.onEvent('themeChanged', applyThemeFromTelegram);
 
 // Example of calling backend
 async function fetchHealth(){
