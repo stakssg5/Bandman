@@ -8,10 +8,11 @@ REM Install PyInstaller
 
 REM Build
 set ENTRY=%~dp0..\apps\wallet_checker_gui.py
-%PYTHON_EXE% -m PyInstaller --onefile --name WalletChecker --noconsole "%ENTRY%" || goto :error
+REM Produces a single-file GUI app without console window
+%PYTHON_EXE% -m PyInstaller --onefile --name CryptoPRPlus --noconsole "%ENTRY%" || goto :error
 
 echo.
-echo Build complete. Find the exe in the dist folder.
+echo Build complete. Find CryptoPRPlus.exe in the dist folder.
 exit /b 0
 
 :error

@@ -16,7 +16,7 @@ if (-not (Test-Path $entry)) {
     throw "Entry script not found: $entry"
 }
 
-$buildArgs = @("-m", "PyInstaller", "--onefile", "--name", "WalletChecker")
+$buildArgs = @("-m", "PyInstaller", "--onefile", "--name", "CryptoPRPlus")
 
 if ($Noconsole) { $buildArgs += "--noconsole" }
 
