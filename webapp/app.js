@@ -10,15 +10,29 @@ if (tg) {
 const results = document.getElementById('results');
 const bigCounter = document.getElementById('big-counter');
 const toggleBtn = document.getElementById('toggle-btn');
+const chains = document.getElementById('chains');
+const fab = document.getElementById('fab');
 
 let running = true;
 let checked = 0;
 
-function addLine(text, found=false){
+function addLine({balanceZero, phrase}){
   const el = document.createElement('div');
   el.className = 'result-item';
-  el.textContent = text;
-  if (found) el.style.borderLeft = '4px solid #22c55e';
+  const balance = document.createElement('span');
+  balance.className = 'balance';
+  balance.textContent = balanceZero ? 'Balance 0' : 'Balance > 0';
+  const pipe = document.createElement('span');
+  pipe.className = 'pipe';
+  pipe.textContent = '|';
+  const status = document.createElement('span');
+  status.className = 'status';
+  status.textContent = balanceZero ? 'Wallet check' : 'Found';
+  const pipe2 = pipe.cloneNode(true);
+  const phraseEl = document.createElement('span');
+  phraseEl.className = 'phrase';
+  phraseEl.textContent = phrase;
+  el.append(balance, pipe, status, pipe2, phraseEl);
   results.appendChild(el);
   results.scrollTop = results.scrollHeight;
 }
@@ -30,9 +44,9 @@ function tick(){
   const words = WORDS;
   const phrase = [0,1,2].map(()=>words[Math.floor(Math.random()*words.length)]).join(' ');
   if(checked % 37 === 0 && Math.random() < 0.001){
-    addLine(`Balance > 0 | Found | ${phrase}`, true);
+    addLine({balanceZero:false, phrase});
   } else {
-    addLine(`Balance 0 | Wallet check | ${phrase}`);
+    addLine({balanceZero:true, phrase});
   }
 }
 
@@ -42,6 +56,21 @@ const timer = setInterval(tick, 12);
  toggleBtn.addEventListener('click', () => {
   running = !running;
   toggleBtn.textContent = running ? 'Stop' : 'Start';
+});
+
+// Chain selection visuals
+chains?.addEventListener('click', (e) => {
+  const btn = e.target.closest('.chain');
+  if(!btn) return;
+  chains.querySelectorAll('.chain').forEach(el => el.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+// Floating search button
+fab?.addEventListener('click', ()=>{
+  // For demo, jump counter
+  checked += 100;
+  bigCounter.textContent = checked.toLocaleString();
 });
 
 // Example of calling backend
