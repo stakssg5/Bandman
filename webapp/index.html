@@ -18,30 +18,48 @@
         <div class="section-title">Search results</div>
       </header>
 
-      <section class="results" id="results"></section>
+      <section class="results" id="results" aria-live="polite"></section>
 
-      <section class="chains">
-        <div class="badge">₿</div>
-        <div class="badge">Ξ</div>
-        <div class="badge">BNB</div>
-        <div class="badge">◎</div>
-        <div class="badge">AVA</div>
-        <div class="badge">Ł</div>
-        <div class="badge">OP</div>
-        <div class="badge">MATIC</div>
-        <div class="badge">TON</div>
-        <div class="badge">TRX</div>
+      <section class="chains" id="chains">
+        <button class="badge chain active" data-chain="btc" title="Bitcoin">₿<span class="dot"></span></button>
+        <button class="badge chain" data-chain="eth" title="Ethereum">Ξ</button>
+        <button class="badge chain" data-chain="bnb" title="BNB">BNB</button>
+        <button class="badge chain" data-chain="sol" title="Solana">◎</button>
+        <button class="badge chain" data-chain="avax" title="Avalanche">AVA</button>
+        <button class="badge chain" data-chain="ltc" title="Litecoin">Ł</button>
+        <button class="badge chain" data-chain="op" title="Optimism">OP</button>
+        <button class="badge chain" data-chain="matic" title="Polygon">MATIC</button>
+        <button class="badge chain" data-chain="ton" title="TON">TON</button>
+        <button class="badge chain" data-chain="trx" title="TRON">TRX</button>
       </section>
 
       <div class="controls">
         <button id="toggle-btn" class="primary">Stop</button>
       </div>
 
-      <nav class="bottom-nav">
-        <span>My profile</span>
-        <span>Plans</span>
-        <span>Support</span>
-        <span>FAQ</span>
+      <button id="fab" class="fab" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+          <path fill="currentColor" d="M10.5 3a7.5 7.5 0 0 1 5.92 12.25l3.66 3.66a1 1 0 1 1-1.42 1.42l-3.66-3.66A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/>
+        </svg>
+      </button>
+
+      <nav class="bottom-nav" role="navigation">
+        <button class="nav-item" aria-label="My profile">
+          <span class="nav-ico">👤</span>
+          <span class="nav-label">My profile</span>
+        </button>
+        <button class="nav-item" aria-label="Plans">
+          <span class="nav-ico">💲</span>
+          <span class="nav-label">Plans</span>
+        </button>
+        <button class="nav-item" aria-label="Support">
+          <span class="nav-ico">📞</span>
+          <span class="nav-label">Support</span>
+        </button>
+        <button class="nav-item" aria-label="FAQ">
+          <span class="nav-ico">❓</span>
+          <span class="nav-label">FAQ</span>
+        </button>
       </nav>
     </div>
 
